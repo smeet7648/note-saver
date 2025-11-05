@@ -8,7 +8,7 @@ const app = express();
 // ✅ CORS setup (you can later restrict the origin to your Netlify domain)
 app.use(
   cors({
-    origin: "*",
+    origin: "https://note-saver-c37u.onrender.com/",
     methods: ["GET", "POST"],
   })
 );
