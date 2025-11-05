@@ -10,7 +10,7 @@ function Login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const res = await fetch("http://localhost:3000/login", {
+    const res = await fetch("https://note-saver-c37u.onrender.com/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
