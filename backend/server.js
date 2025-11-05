@@ -8,7 +8,7 @@ const app = express();
 // ✅ CORS setup (you can later restrict the origin to your Netlify domain)
 app.use(
   cors({
-    origin: "https://690add09b4bea3d021a33f58--shimmering-lamington-6eec95.netlify.app",
+    origin: "https://shimmering-lamington-6eec95.netlify.app",
     methods: ["GET", "POST"],
   })
 );
