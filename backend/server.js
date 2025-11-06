@@ -7,19 +7,18 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ CORS setup (Netlify frontend allowed)
+// ✅ CORS setup for localhost frontend
 app.use(
   cors({
-    origin: "https://shimmering-lamington-6eec95.netlify.app",
+    origin: "http://localhost:3000", // React dev server
     methods: ["GET", "POST"],
   })
 );
 
 app.use(express.json());
 
-// ✅ MongoDB Connection (works both locally & on Render)
-const MONGO_URL =
-  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/noteSaver";
+// ✅ MongoDB Connection
+const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/noteSaver";
 
 mongoose
   .connect(MONGO_URL, {
@@ -51,9 +50,7 @@ const User = mongoose.model("User", UserSchema);
 const Note = mongoose.model("Note", NoteSchema);
 
 // ✅ Secret Key
-const SECRET_KEY =
-  process.env.SECRET_KEY ||
-  "9babb0e332d01547d276b1c0a6b07752834e0ea850999f2af956efebecdd3314855020a82780a75b9c00fa8cf77a300ed0c115f5b73223181d8a037d654583af";
+const SECRET_KEY = process.env.SECRET_KEY || "supersecretkey";
 
 // ✅ SIGNUP
 app.post("/signup", async (req, res) => {
@@ -91,7 +88,7 @@ app.post("/login", async (req, res) => {
 
 // ✅ SAVE NOTE
 app.post("/savenote", async (req, res) => {
-  const { token, title, content } = req.body;
+  const { token, title, content, date } = req.body;
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
@@ -101,11 +98,7 @@ app.post("/savenote", async (req, res) => {
       userEmail,
       title,
       content,
-      date: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
+      date,
     });
 
     await note.save();
@@ -123,13 +116,28 @@ app.post("/getnotes", async (req, res) => {
     const decoded = jwt.verify(token, SECRET_KEY);
     const userEmail = decoded.email;
 
-    const userNotes = await Note.find({ userEmail });
+    const userNotes = await Note.find({ userEmail }).sort({ _id: -1 });
     res.json({ status: "ok", notes: userNotes });
   } catch (err) {
     res.json({ status: "error", error: "Invalid token" });
   }
 });
 
-// ✅ Dynamic port for Render
+// ✅ DELETE NOTE
+app.post("/deletenote", async (req, res) => {
+  const { token, noteId } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userEmail = decoded.email;
+
+    await Note.deleteOne({ _id: noteId, userEmail });
+    res.json({ status: "ok", message: "Note deleted!" });
+  } catch (err) {
+    res.json({ status: "error", error: "Invalid token or note" });
+  }
+});
+
+// ✅ Dynamic port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

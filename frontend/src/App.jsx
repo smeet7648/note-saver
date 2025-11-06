@@ -7,6 +7,8 @@ import Signup from "./components/Signup";
 function App() {
   const [notes, setNotes] = useState([]);
   const [userEmail, setUserEmail] = useState(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,7 +19,7 @@ function App() {
       setUserEmail(payload.email);
 
       // Fetch notes from backend
-      fetch("https://note-saver-c37u.onrender.com/getnotes", {
+      fetch("http://localhost:3000/getnotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
@@ -32,16 +34,13 @@ function App() {
   }, []);
 
   const saveNote = async () => {
-    const titleInput = document.getElementById("title");
-    const contentInput = document.getElementById("content");
-    const title = titleInput.value.trim();
-    const content = contentInput.value.trim();
-    if (!title && !content) return alert("Please add a title or content!");
+    if (!title.trim() && !content.trim())
+      return alert("Please add a title or content!");
     const token = localStorage.getItem("token");
 
     const note = {
-      title: title || "Untitled",
-      content,
+      title: title.trim() || "Untitled",
+      content: content.trim(),
       date: new Date().toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -49,28 +48,39 @@ function App() {
       }),
     };
 
-    // Save to backend
-    const res = await fetch("https://note-saver-c37u.onrender.com/savenote", {
+    const res = await fetch("http://localhost:3000/savenote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, ...note }),
     });
+
     const data = await res.json();
     if (data.status === "ok") {
-      setNotes([note, ...notes]); // update local state
-      titleInput.value = "";
-      contentInput.value = "";
+      setNotes([note, ...notes]);
+      setTitle("");
+      setContent("");
     } else {
       alert(data.error || "Failed to save note");
     }
   };
 
-  const deleteNote = async (index) => {
-    // Optional: implement backend delete if needed
-    const updatedNotes = [...notes];
-    updatedNotes.splice(index, 1);
-    setNotes(updatedNotes);
-    alert("Note deleted locally. Backend deletion can be added.");
+  const deleteNote = async (noteId, index) => {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://localhost:3000/deletenote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, noteId }),
+    });
+
+    const data = await res.json();
+    if (data.status === "ok") {
+      const updatedNotes = [...notes];
+      updatedNotes.splice(index, 1);
+      setNotes(updatedNotes);
+    } else {
+      alert(data.error || "Failed to delete note");
+    }
   };
 
   return (
@@ -99,9 +109,18 @@ function App() {
                 <div className="notes-layout">
                   <div className="notes-left-section">
                     <div className="input-box">
-                      <input type="text" id="title" placeholder="Note title..." />
-                      <textarea id="content" placeholder="Write something..."></textarea>
-                      <button id="saveBtn" type="button" onClick={saveNote}>
+                      <input
+                        type="text"
+                        placeholder="Note title..."
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                      <textarea
+                        placeholder="Write something..."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                      ></textarea>
+                      <button type="button" onClick={saveNote}>
                         Save Note
                       </button>
                     </div>
@@ -123,12 +142,12 @@ function App() {
                           </div>
                         )}
                         {notes.map((note, index) => (
-                          <div className="note-card" key={index}>
+                          <div className="note-card" key={note._id}>
                             <div className="note-card-header">
                               <h3>{note.title}</h3>
                               <button
                                 className="note-delete-btn"
-                                onClick={() => deleteNote(index)}
+                                onClick={() => deleteNote(note._id, index)}
                               >
                                 🗑️
                               </button>
