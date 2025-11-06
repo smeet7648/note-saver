@@ -23,11 +23,8 @@ function Login() {
 
     const data = await res.json();
     if (data.status === "ok") {
-      alert("Login successful");
       localStorage.setItem("token", data.token); // ✅ store JWT
       window.location.href = "/";
-    } else {
-      alert(data.error);
     }
   }
   return (

@@ -27,10 +27,7 @@ function Signup() {
 
     const data = await res.json();
     if (data.status === "ok") {
-      alert("Signup successful");
       window.location.href = "/Login";
-    } else {
-      alert(data.error);
     }
   }
   return (
