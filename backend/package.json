@@ -38,6 +38,7 @@
     "debug": "^4.4.3",
     "deep-is": "^0.1.4",
     "depd": "^2.0.0",
+    "dotenv": "^17.2.3",
     "dunder-proto": "^1.0.1",
     "ee-first": "^1.1.1",
     "electron-to-chromium": "^1.5.244",
