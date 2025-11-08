@@ -19,7 +19,7 @@ function App() {
       setUserEmail(payload.email);
 
       // Fetch notes from backend
-      fetch("http://localhost:3000/getnotes", {
+      fetch("https://note-saver-c37u.onrender.com/getnotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
@@ -48,7 +48,7 @@ function App() {
       }),
     };
 
-    const res = await fetch("http://localhost:3000/savenote", {
+    const res = await fetch("https://note-saver-c37u.onrender.com/savenote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, ...note }),
@@ -67,7 +67,7 @@ function App() {
   const deleteNote = async (noteId, index) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:3000/deletenote", {
+    const res = await fetch("https://note-saver-c37u.onrender.com/deletenote", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, noteId }),

@@ -10,7 +10,7 @@ const app = express();
 // ✅ CORS setup for localhost frontend
 app.use(
   cors({
-    origin: "http://localhost:3000", // React dev server
+    origin: "https://note-saver-3.onrender.com", // React dev server
     methods: ["GET", "POST"],
   })
 );
