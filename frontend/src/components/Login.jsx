@@ -27,7 +27,7 @@ function Login() {
       window.location.href = "/";
     }
     else{
-      alert("invalid credentials");
+      alert(data.error || "Login failed, please try again.");
     }
   }
   return (
