@@ -27,7 +27,7 @@ function Signup() {
 
     const data = await res.json();
     if (data.status === "ok") {
-      window.location.href = "/Login";
+      window.location.href = "/login";
     }
   }
   return (
