@@ -111,16 +111,18 @@ function App() {
                     <div className="input-box">
                       <input
                         type="text"
+                        id="title"
                         placeholder="Note title..."
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                       />
                       <textarea
                         placeholder="Write something..."
+                        id="content" 
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                       ></textarea>
-                      <button type="button" onClick={saveNote}>
+                      <button type="button" id="saveBtn" onClick={saveNote}>
                         Save Note
                       </button>
                     </div>
