@@ -26,6 +26,9 @@ function Login() {
       localStorage.setItem("token", data.token); // ✅ store JWT
       window.location.href = "/";
     }
+    else{
+      alert("invalid credentials");
+    }
   }
   return (
     <div className="login-container">
