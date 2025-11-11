@@ -598,3 +598,62 @@ body {
     font-size: 1.2rem;
   }
 }
+
+/* Logged-in Navbar Buttons */
+.btn-add {
+  font-size: 1.6rem;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-add:hover {
+  background: white;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.4);
+}
+
+/* User Info Display */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-weight: 600;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.user-icon {
+  font-size: 1.3rem;
+}
+
+.user-email {
+  font-size: 1rem;
+}
+
+/* Logout Button */
+.btn-logout {
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+  color: white;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35);
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 107, 107, 0.45);
+}
