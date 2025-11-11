@@ -1,53 +1,137 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 
 function App() {
-  const [notes, setNotes] = useState([]);
-  const [userEmail, setUserEmail] = useState(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  let notes = [];
+  let title = "";
+  let content = "";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    const usernameEl = document.getElementById("usernameDisplay");
+    const loginBtns = document.getElementById("loginBtns");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setUserEmail(payload.email);
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const username = payload.name || payload.email.split("@")[0];
 
-      // Fetch notes from backend
-      fetch("https://note-saver-c37u.onrender.com/getnotes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "ok") setNotes(data.notes);
-        });
-    } catch (err) {
-      console.error("Invalid token:", err);
+        if (usernameEl) {
+          usernameEl.innerText = `👋 Hello, ${username}`;
+          usernameEl.style.display = "block";
+        }
+        if (loginBtns) loginBtns.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-block";
+
+        // fetch notes
+        fetch("https://note-saver-c37u.onrender.com/getnotes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "ok") {
+              notes = data.notes;
+              displayNotes(notes);
+            }
+          });
+      } catch (err) {
+        console.error("Invalid token:", err);
+      }
+    } else {
+      if (usernameEl) usernameEl.style.display = "none";
+      if (logoutBtn) logoutBtn.style.display = "none";
+      if (loginBtns) loginBtns.style.display = "flex";
     }
   }, []);
 
-  const saveNote = async () => {
-    if (!title.trim() && !content.trim())
-      return alert("Please add a title or content!");
+  function displayNotes(notesArr) {
+    const grid = document.getElementById("notesGrid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    if (!localStorage.getItem("token")) {
+      grid.innerHTML = `
+        <div class="empty-notes">
+          <div class="empty-notes-icon">📝</div>
+          <p>Please login to see your notes!</p>
+        </div>`;
+      return;
+    }
+
+    if (notesArr.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-notes">
+          <div class="empty-notes-icon">📝</div>
+          <p>No notes yet. Start creating your first note!</p>
+        </div>`;
+      return;
+    }
+
+    notesArr.forEach((note, index) => {
+      const div = document.createElement("div");
+      div.className = "note-card";
+      div.innerHTML = `
+        <div class="note-card-header">
+          <h3>${note.title}</h3>
+          <button class="note-delete-btn" data-id="${note._id}" data-index="${index}">🗑️</button>
+        </div>
+        <p>${note.content}</p>
+        <div class="note-date">📅 ${note.date}</div>
+      `;
+      grid.appendChild(div);
+    });
+
+    document.querySelectorAll(".note-delete-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const token = localStorage.getItem("token");
+        const noteId = e.target.getAttribute("data-id");
+        const index = e.target.getAttribute("data-index");
+
+        const res = await fetch("https://note-saver-c37u.onrender.com/deletenote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, noteId }),
+        });
+
+        const data = await res.json();
+        if (data.status === "ok") {
+          notes.splice(index, 1);
+          displayNotes(notes);
+        } else {
+          alert(data.error || "Failed to delete note");
+        }
+      });
+    });
+  }
+
+  async function saveNote() {
     const token = localStorage.getItem("token");
+    if (!token) return alert("Please login first!");
+
+    const titleInput = document.getElementById("title");
+    const contentInput = document.getElementById("content");
 
     const note = {
-      title: title.trim() || "Untitled",
-      content: content.trim(),
+      title: titleInput.value.trim() || "Untitled",
+      content: contentInput.value.trim(),
       date: new Date().toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
       }),
     };
+
+    if (!note.title && !note.content) {
+      alert("Please add a title or content!");
+      return;
+    }
 
     const res = await fetch("https://note-saver-c37u.onrender.com/savenote", {
       method: "POST",
@@ -57,47 +141,48 @@ function App() {
 
     const data = await res.json();
     if (data.status === "ok") {
-      setNotes([note, ...notes]);
-      setTitle("");
-      setContent("");
+      notes.unshift(note);
+      displayNotes(notes);
+      titleInput.value = "";
+      contentInput.value = "";
     } else {
       alert(data.error || "Failed to save note");
     }
-  };
+  }
 
-  const deleteNote = async (noteId, index) => {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch("https://note-saver-c37u.onrender.com/deletenote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, noteId }),
-    });
-
-    const data = await res.json();
-    if (data.status === "ok") {
-      const updatedNotes = [...notes];
-      updatedNotes.splice(index, 1);
-      setNotes(updatedNotes);
-    } else {
-      alert(data.error || "Failed to delete note");
-    }
-  };
+  function logoutUser() {
+    localStorage.removeItem("token");
+    window.location.reload();
+  }
 
   return (
     <Router>
       <nav className="navbar">
-        <Link to="/" className="navbar-logo">
-          📝 My Notes
-        </Link>
-        <div className="navbar-buttons">
-          <Link to="/login">
-            <button className="btn-login">Login</button>
-          </Link>
-          <Link to="/signup">
-            <button className="btn-signup">Sign Up</button>
-          </Link>
+        <Link to="/" className="navbar-logo">📝 My Notes</Link>
+
+        <div id="usernameDisplay" style={{ display: "none", color: "white", fontWeight: "600" }}></div>
+
+        <div className="navbar-buttons" id="loginBtns">
+          <Link to="/login"><button className="btn-login">Login</button></Link>
+          <Link to="/signup"><button className="btn-signup">Sign Up</button></Link>
         </div>
+
+        <button
+          id="logoutBtn"
+          style={{
+            display: "none",
+            background: "white",
+            color: "#667eea",
+            padding: "12px 25px",
+            borderRadius: "10px",
+            fontWeight: "600",
+            cursor: "pointer",
+            border: "none",
+          }}
+          onClick={logoutUser}
+        >
+          Logout
+        </button>
       </nav>
 
       <Routes>
@@ -110,56 +195,15 @@ function App() {
                 <div className="notes-layout">
                   <div className="notes-left-section">
                     <div className="input-box">
-                      <input
-                        type="text"
-                        id="title"
-                        placeholder="Note title..."
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                      />
-                      <textarea
-                        placeholder="Write something..."
-                        id="content" 
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                      ></textarea>
-                      <button type="button" id="saveBtn" onClick={saveNote}>
-                        Save Note
-                      </button>
+                      <input type="text" id="title" placeholder="Note title..." />
+                      <textarea placeholder="Write something..." id="content"></textarea>
+                      <button type="button" id="saveBtn" onClick={saveNote}>Save Note</button>
                     </div>
                   </div>
                   <div className="notes-right-section">
                     <div className="notes-section">
                       <h2>Your Saved Notes</h2>
-                      <div className="notes-grid">
-                        {userEmail && notes.length === 0 && (
-                          <div className="empty-notes">
-                            <div className="empty-notes-icon">📝</div>
-                            <p>No notes yet. Start creating your first note!</p>
-                          </div>
-                        )}
-                        {!userEmail && (
-                          <div className="empty-notes">
-                            <div className="empty-notes-icon">📝</div>
-                            <p>Please login to see your notes!</p>
-                          </div>
-                        )}
-                        {notes.map((note, index) => (
-                          <div className="note-card" key={note._id}>
-                            <div className="note-card-header">
-                              <h3>{note.title}</h3>
-                              <button
-                                className="note-delete-btn"
-                                onClick={() => deleteNote(note._id, index)}
-                              >
-                                🗑️
-                              </button>
-                            </div>
-                            <p>{note.content}</p>
-                            <div className="note-date">{note.date}</div>
-                          </div>
-                        ))}
-                      </div>
+                      <div id="notesGrid" className="notes-grid"></div>
                     </div>
                   </div>
                 </div>
