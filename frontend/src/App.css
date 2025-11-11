@@ -187,6 +187,7 @@ body {
   text-decoration: underline;
 }
 
+/* Notes Container */
 .note-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -312,11 +313,6 @@ body {
   transform: translateY(-2px);
 }
 
-#title::placeholder {
-  color: #aaa;
-  font-weight: 500;
-}
-
 #content {
   width: 100%;
   padding: 20px 24px;
@@ -337,10 +333,6 @@ body {
   border-color: #667eea;
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
   transform: translateY(-2px);
-}
-
-#content::placeholder {
-  color: #aaa;
 }
 
 #saveBtn {
@@ -364,63 +356,8 @@ body {
   background: linear-gradient(135deg, #764ba2, #667eea);
 }
 
-#saveBtn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 15px 20px;
-  }
-
-  .navbar-logo {
-    font-size: 1.4rem;
-  }
-
-  .navbar-buttons {
-    gap: 10px;
-  }
-
-  .btn-login,
-  .btn-signup {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-  }
-
-  .note-app {
-    padding: 30px 20px;
-  }
-
-  .note-app h1 {
-    font-size: 2.2rem;
-    margin-bottom: 30px;
-  }
-
-  #title {
-    font-size: 1.1rem;
-    padding: 15px 20px;
-  }
-
-  #content {
-    font-size: 1rem;
-    padding: 18px 20px;
-    min-height: 150px;
-  }
-
-  #saveBtn {
-    font-size: 1rem;
-    padding: 15px 30px;
-  }
-}
-
 /* Notes Display Section */
 .notes-section {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: none;
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -434,9 +371,9 @@ body {
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
+/* ✅ FLEXBOX version of notes-grid */
 .notes-grid {
   display: flex;
   flex-direction: column;
@@ -444,23 +381,21 @@ body {
   overflow-y: auto;
   padding-right: 10px;
   max-height: 520px;
+  flex-wrap: nowrap;
 }
 
 /* Custom Scrollbar */
 .notes-grid::-webkit-scrollbar {
   width: 8px;
 }
-
 .notes-grid::-webkit-scrollbar-track {
   background: #f0f0f0;
   border-radius: 10px;
 }
-
 .notes-grid::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 10px;
 }
-
 .notes-grid::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #764ba2, #667eea);
 }
@@ -581,7 +516,7 @@ body {
 
 @media (max-width: 768px) {
   .notes-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 15px;
   }
 
@@ -597,63 +532,4 @@ body {
   .note-card h3 {
     font-size: 1.2rem;
   }
-}
-
-/* Logged-in Navbar Buttons */
-.btn-add {
-  font-size: 1.6rem;
-  background: rgba(255, 255, 255, 0.25);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  color: white;
-  padding: 8px 14px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-add:hover {
-  background: white;
-  color: #667eea;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.4);
-}
-
-/* User Info Display */
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: white;
-  font-weight: 600;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-}
-
-.user-icon {
-  font-size: 1.3rem;
-}
-
-.user-email {
-  font-size: 1rem;
-}
-
-/* Logout Button */
-.btn-logout {
-  padding: 10px 22px;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-  color: white;
-  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35);
-  transition: all 0.3s ease;
-}
-
-.btn-logout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(255, 107, 107, 0.45);
 }
