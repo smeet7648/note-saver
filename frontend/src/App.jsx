@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
@@ -18,6 +19,7 @@ function App() {
       const payload = JSON.parse(atob(token.split(".")[1]));
       setUserEmail(payload.email);
 
+      // Fetch notes from backend
       fetch("https://note-saver-c37u.onrender.com/getnotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,41 +84,19 @@ function App() {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUserEmail(null);
-    setNotes([]);
-  };
-
   return (
     <Router>
       <nav className="navbar">
-        <Link to="/" className="navbar-logo">📝 My Notes</Link>
-
+        <Link to="/" className="navbar-logo">
+          📝 My Notes
+        </Link>
         <div className="navbar-buttons">
-          {userEmail ? (
-            <>
-              <button className="btn-add" onClick={() => document.getElementById("title").focus()}>
-                ➕
-              </button>
-
-              <div className="user-info">
-                <span className="user-icon">👤</span>
-                <span className="user-email">{userEmail}</span>
-              </div>
-
-              <button className="btn-logout" onClick={logout}>Logout</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">
-                <button className="btn-login">Login</button>
-              </Link>
-              <Link to="/signup">
-                <button className="btn-signup">Sign Up</button>
-              </Link>
-            </>
-          )}
+          <Link to="/login">
+            <button className="btn-login">Login</button>
+          </Link>
+          <Link to="/signup">
+            <button className="btn-signup">Sign Up</button>
+          </Link>
         </div>
       </nav>
 
@@ -129,30 +109,25 @@ function App() {
                 <h1>📝 My Notes</h1>
                 <div className="notes-layout">
                   <div className="notes-left-section">
-                    {userEmail ? (
-                      <div className="input-box">
-                        <input
-                          type="text"
-                          id="title"
-                          placeholder="Note title..."
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
-                        />
-                        <textarea
-                          placeholder="Write something..."
-                          id="content"
-                          value={content}
-                          onChange={(e) => setContent(e.target.value)}
-                        ></textarea>
-                        <button type="button" id="saveBtn" onClick={saveNote}>
-                          Save Note
-                        </button>
-                      </div>
-                    ) : (
-                      <p style={{ padding: "20px" }}>Please login to create notes.</p>
-                    )}
+                    <div className="input-box">
+                      <input
+                        type="text"
+                        id="title"
+                        placeholder="Note title..."
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                      <textarea
+                        placeholder="Write something..."
+                        id="content" 
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                      ></textarea>
+                      <button type="button" id="saveBtn" onClick={saveNote}>
+                        Save Note
+                      </button>
+                    </div>
                   </div>
-
                   <div className="notes-right-section">
                     <div className="notes-section">
                       <h2>Your Saved Notes</h2>
