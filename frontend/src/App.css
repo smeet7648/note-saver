@@ -533,3 +533,20 @@ body {
     font-size: 1.2rem;
   }
 }
+
+/* 📱 Mobile layout fix: move notes section below input */
+@media (max-width: 768px) {
+  .notes-layout {
+    display: flex;
+    flex-direction: column; /* stack vertically */
+  }
+
+  .notes-left-section,
+  .notes-right-section {
+    width: 100%;
+  }
+
+  .notes-right-section {
+    margin-top: 30px; /* space between input and notes */
+  }
+}
