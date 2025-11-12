@@ -550,3 +550,30 @@ body {
     margin-top: 30px; /* space between input and notes */
   }
 }
+
+/* 📱 Navbar optimization for mobile */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 20px; /* smaller height and padding */
+  }
+
+  .navbar-logo {
+    font-size: 1.4rem; /* smaller logo text */
+  }
+
+  .btn-login,
+  .btn-signup {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+
+  #logoutBtn {
+    padding: 8px 18px !important;
+    font-size: 0.9rem !important;
+  }
+
+  #usernameDisplay {
+    font-size: 0.9rem;
+  }
+}
