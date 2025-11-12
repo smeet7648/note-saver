@@ -83,7 +83,7 @@ function App() {
           <button class="note-delete-btn" data-id="${note._id}" data-index="${index}">🗑️</button>
         </div>
         <p>${note.content}</p>
-        <div class="note-date">📅 ${note.date}</div>
+        <div class="note-date"> ${note.date}</div>
       `;
       grid.appendChild(div);
     });
